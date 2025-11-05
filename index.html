@@ -3,8 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台灣泳池地圖 - Taiwan Swimming Pool Map</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>台灣泳池地圖 - 找到最適合你的游泳池 | Taiwan Swimming Pool Map</title>
+    <meta name="description" content="台灣最完整的游泳池地圖!搜尋全台各縣市的室內外泳池,包含票價、營業時間、設施介紹和評分。立即找到離你最近的游泳池,開始你的游泳之旅!">
+    <meta name="keywords" content="台灣游泳池,泳池地圖,游泳池查詢,室內游泳池,室外游泳池,游泳池票價,游泳池營業時間,台北游泳池,高雄游泳池,台中游泳池">
+    <meta name="author" content="Taiwan Swimming Pool Map">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://0zhen.github.io/taiwan_pool_map/">
+    <meta property="og:title" content="台灣泳池地圖 - 找到最適合你的游泳池">
+    <meta property="og:description" content="台灣最完整的游泳池地圖!搜尋全台各縣市的室內外泳池,包含票價、營業時間、設施介紹和評分。">
+    <meta property="og:image" content="https://0zhen.github.io/taiwan_pool_map/swimming_5200536.png">
+    <meta property="og:locale" content="zh_TW">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://0zhen.github.io/taiwan_pool_map/">
+    <meta name="twitter:title" content="台灣泳池地圖 - 找到最適合你的游泳池">
+    <meta name="twitter:description" content="台灣最完整的游泳池地圖!搜尋全台各縣市的室內外泳池,包含票價、營業時間、設施介紹和評分。">
+    <meta name="twitter:image" content="https://0zhen.github.io/taiwan_pool_map/swimming_5200536.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://0zhen.github.io/taiwan_pool_map/">
+    
+    <!-- Favicon -->
     <link rel="shortcut icon" href="1-b93578db.ico" type="image/x-icon" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "台灣泳池地圖",
+      "alternateName": "Taiwan Swimming Pool Map",
+      "url": "https://0zhen.github.io/taiwan_pool_map/",
+      "description": "台灣最完整的游泳池地圖,提供全台各縣市泳池資訊查詢",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "TWD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.5",
+        "ratingCount": "8"
+      }
+    }
+    </script>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6ZFFQ0KWT9');
+    </script>
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
@@ -568,6 +628,10 @@
                 <input type="url" id="poolPhoto" placeholder="https://example.com/photo.jpg">
                 <small style="color: #666; display: block; margin-top: 5px;">請輸入圖片的網址 (選填)</small>
                 
+                <label for="poolGoogleMapUrl">Google Map 網址</label>
+                <input type="url" id="poolGoogleMapUrl" placeholder="https://maps.app.goo.gl/xxxxx 或 https://goo.gl/maps/xxxxx">
+                <small style="color: #666; display: block; margin-top: 5px;">請輸入 Google Map 分享連結 (選填)</small>
+                
                 <div class="form-buttons">
                     <button type="submit" class="btn-submit">儲存</button>
                     <button type="button" class="btn-cancel" onclick="closeModal()">取消</button>
@@ -651,7 +715,8 @@
                 hours: '06:00-22:00',
                 facilities: ['室內', '50公尺', '溫水', '淋浴間'],
                 description: '設備完善的市立游泳池,提供標準泳道',
-                photo: 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=400&h=250&fit=crop'
+                photo: 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=400&h=250&fit=crop',
+                googleMapUrl: null
             },
             {
                 id: 2,
@@ -667,7 +732,8 @@
                 hours: '06:00-22:00',
                 facilities: ['室內', '25公尺', '溫水', '兒童池'],
                 description: '親子友善,設有兒童戲水區',
-                photo: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=400&h=250&fit=crop'
+                photo: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=400&h=250&fit=crop',
+                googleMapUrl: null
             },
             {
                 id: 3,
@@ -683,7 +749,8 @@
                 hours: '06:00-22:00',
                 facilities: ['室內', '25公尺', '溫水', 'SPA'],
                 description: '現代化設施,附設SPA水療區',
-                photo: 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=400&h=250&fit=crop'
+                photo: 'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=400&h=250&fit=crop',
+                googleMapUrl: null
             },
             {
                 id: 4,
@@ -699,7 +766,8 @@
                 hours: '05:30-21:00',
                 facilities: ['室外', '50公尺', '跳水台', '觀眾席'],
                 description: '國際標準泳池,舉辦過多場大型賽事',
-                photo: 'https://images.unsplash.com/photo-1560089000-7433a4ebbd64?w=400&h=250&fit=crop'
+                photo: 'https://images.unsplash.com/photo-1560089000-7433a4ebbd64?w=400&h=250&fit=crop',
+                googleMapUrl: null
             },
             {
                 id: 5,
@@ -715,7 +783,8 @@
                 hours: '06:00-21:30',
                 facilities: ['室內', '50公尺', '溫水', '教學池'],
                 description: '提供游泳課程,適合初學者',
-                photo: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop'
+                photo: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=250&fit=crop',
+                googleMapUrl: null
             },
             {
                 id: 6,
@@ -731,7 +800,8 @@
                 hours: '06:00-22:00',
                 facilities: ['室內', '25公尺', '溫水', '蒸氣室'],
                 description: '舒適的運動環境,設有蒸氣室',
-                photo: 'https://images.unsplash.com/photo-1600965962102-9d260a71890d?w=400&h=250&fit=crop'
+                photo: 'https://images.unsplash.com/photo-1600965962102-9d260a71890d?w=400&h=250&fit=crop',
+                googleMapUrl: null
             },
             {
                 id: 7,
@@ -747,7 +817,8 @@
                 hours: '05:30-21:00',
                 facilities: ['室外', '50公尺', '跳水台', '遮陽棚'],
                 description: '夏季熱門泳池,視野開闊',
-                photo: 'https://images.unsplash.com/photo-1622973536968-3ead9e780570?w=400&h=250&fit=crop'
+                photo: 'https://images.unsplash.com/photo-1622973536968-3ead9e780570?w=400&h=250&fit=crop',
+                googleMapUrl: null
             },
             {
                 id: 8,
@@ -763,7 +834,8 @@
                 hours: '06:00-20:00',
                 facilities: ['室外', '25公尺', '兒童池', '綠地'],
                 description: '環境優美,鄰近公園綠地',
-                photo: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=400&h=250&fit=crop'
+                photo: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=400&h=250&fit=crop',
+                googleMapUrl: null
             }
         ];
 
@@ -988,9 +1060,16 @@
                 ? `<img src="${pool.photo}" alt="${pool.name}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;" onerror="this.style.display='none';">`
                 : '';
             
+            // 生成 Google Map 連結
+            const mapUrl = pool.googleMapUrl || `https://www.google.com/maps/search/?api=1&query=${pool.lat},${pool.lng}`;
+            
             return `
                 ${photoHTML}
-                <div class="popup-title">${pool.name}</div>
+                <div class="popup-title">
+                    <a href="${mapUrl}" target="_blank" style="color: #333; text-decoration: none;">
+                        ${pool.name} 📍
+                    </a>
+                </div>
                 <div class="popup-info">⭐ 評分: <span class="rating">${pool.rating}</span></div>
                 <div class="popup-info">💰 票價: <span class="price">${pool.price}</span></div>
                 <div class="popup-info">🕐 營業時間: <span class="hours">${pool.hours}</span></div>
@@ -1019,10 +1098,18 @@
                        <div class="pool-photo-placeholder" style="display:none;">🏊</div>`
                     : `<div class="pool-photo-placeholder">🏊</div>`;
 
+                // 生成 Google Map 連結
+                const mapUrl = pool.googleMapUrl || `https://www.google.com/maps/search/?api=1&query=${pool.lat},${pool.lng}`;
+
                 card.innerHTML = `
                     ${photoHTML}
                     <div class="pool-content">
-                        <div class="pool-name">${pool.name}</div>
+                        <div class="pool-name">
+                            <a href="${mapUrl}" target="_blank" style="color: #333; text-decoration: none; display: flex; align-items: center; gap: 5px;" onclick="event.stopPropagation();">
+                                ${pool.name}
+                                <span style="font-size: 0.8em; color: #667eea;">📍</span>
+                            </a>
+                        </div>
                         <div class="pool-info">⭐ ${pool.rating} ${generateStars(pool.rating)}</div>
                         <div class="pool-info"><strong>票價:</strong> <span class="price">${pool.price}</span></div>
                         <div class="pool-info"><strong>營業時間:</strong> <span class="hours">${pool.hours}</span></div>
@@ -1137,6 +1224,7 @@
             document.getElementById('poolFacilities').value = pool.facilities.join(',');
             document.getElementById('poolDescription').value = pool.description;
             document.getElementById('poolPhoto').value = pool.photo || '';
+            document.getElementById('poolGoogleMapUrl').value = pool.googleMapUrl || '';
 
             document.getElementById('poolModal').style.display = 'block';
         }
@@ -1187,7 +1275,8 @@
                 hours: document.getElementById('poolHours').value,
                 facilities: document.getElementById('poolFacilities').value.split(',').map(f => f.trim()),
                 description: document.getElementById('poolDescription').value,
-                photo: document.getElementById('poolPhoto').value || null
+                photo: document.getElementById('poolPhoto').value || null,
+                googleMapUrl: document.getElementById('poolGoogleMapUrl').value || null
             };
 
             try {
