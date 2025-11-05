@@ -585,15 +585,20 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // ==================== Firebase 設定 ====================
-        // 從外部檔案載入 Firebase 設定
-        const firebaseConfig = window.firebaseConfig || {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+        // 從外部檔案載入 Firebase 設定,如果沒有則使用預設值
+        /*let firebaseConfig = window.firebaseConfig;
+        
+        // 如果外部設定檔沒有載入,使用預設值
+        if (!firebaseConfig) {
+            firebaseConfig = {
+                apiKey: "YOUR_API_KEY",
+                authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+                projectId: "YOUR_PROJECT_ID",
+                storageBucket: "YOUR_PROJECT_ID.appspot.com",
+                messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+                appId: "YOUR_APP_ID"
+            };
+        }*/
 
         // 初始化 Firebase
         let db;
