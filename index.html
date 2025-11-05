@@ -13,7 +13,7 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://0zhen.github.io/taiwan_pool_map/">
+    <meta property="og:url" content="https://你的網站網址.com/">
     <meta property="og:title" content="台灣泳池地圖 - 找到最適合你的游泳池">
     <meta property="og:description" content="台灣最完整的游泳池地圖!搜尋全台各縣市的室內外泳池,包含票價、營業時間、設施介紹和評分。">
     <meta property="og:image" content="https://你的網站網址.com/swimming_5200536.png">
@@ -21,13 +21,13 @@
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://0zhen.github.io/taiwan_pool_map/">
+    <meta name="twitter:url" content="https://你的網站網址.com/">
     <meta name="twitter:title" content="台灣泳池地圖 - 找到最適合你的游泳池">
     <meta name="twitter:description" content="台灣最完整的游泳池地圖!搜尋全台各縣市的室內外泳池,包含票價、營業時間、設施介紹和評分。">
-    <meta name="twitter:image" content="https://0zhen.github.io/taiwan_pool_map/swimming_5200536.png">
+    <meta name="twitter:image" content="https://你的網站網址.com/swimming_5200536.png">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://0zhen.github.io/taiwan_pool_map/">
+    <link rel="canonical" href="https://你的網站網址.com/">
     
     <!-- Favicon -->
     <link rel="shortcut icon" href="1-b93578db.ico" type="image/x-icon" />
@@ -56,7 +56,7 @@
     }
     </script>
     
-<!-- Google Analytics -->
+    <!-- Google Analytics -->
     <script src="google-analytics-config.js"></script>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -615,7 +615,7 @@
                 <label for="poolFacilities">設施 (用逗號分隔) *</label>
                 <input type="text" id="poolFacilities" placeholder="例: 室內,溫水,淋浴間" required>
                 
-                <label for="poolDescription">描述</label>
+                <label for="poolDescription">備註</label>
                 <textarea id="poolDescription" rows="3"></textarea>
                 
                 <label for="poolPhoto">照片網址</label>
@@ -1158,8 +1158,10 @@
                         <div class="pool-info"><strong>營業時間:</strong> <span class="hours">${pool.hours}</span></div>
                         <div class="pool-info"><strong>地址:</strong> ${pool.address || pool.city}</div>
                         <div class="pool-info"><strong>設施:</strong> ${pool.facilities.join(', ')}</div>
+                        ${pool.description ? `<div class="pool-info" style="margin-top: 8px; color: #555; font-style: italic;"><strong>備註:</strong> ${pool.description}</div>` : ''}
                         <div style="margin-top: 10px;">
                             <button class="edit-btn" onclick="event.stopPropagation(); editPool(${pool.id})">✏️ 編輯</button>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deletePool(${pool.id})">🗑️ 刪除</button>
                         </div>
                     </div>
                 `;
