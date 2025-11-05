@@ -195,6 +195,22 @@
             border-color: #764ba2;
         }
 
+        .city-filter-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            background: white;
+        }
+
+        .city-filter-select:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
         .add-pool-btn {
             width: 100%;
             padding: 12px;
@@ -445,12 +461,19 @@
                 <div class="filter-section">
                     <h3>篩選條件</h3>
                     <div class="filter-buttons">
-                        <button class="filter-btn active" data-filter="all">全部</button>
-                        <button class="filter-btn" data-filter="indoor">室內</button>
-                        <button class="filter-btn" data-filter="outdoor">室外</button>
-                        <button class="filter-btn" data-filter="50m">50公尺</button>
-                        <button class="filter-btn" data-filter="25m">25公尺</button>
+                        <button class="filter-btn active" data-filter="all" data-type="general">全部</button>
+                        <button class="filter-btn" data-filter="indoor" data-type="general">室內</button>
+                        <button class="filter-btn" data-filter="outdoor" data-type="general">室外</button>
+                        <button class="filter-btn" data-filter="50m" data-type="general">50公尺</button>
+                        <button class="filter-btn" data-filter="25m" data-type="general">25公尺</button>
                     </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>依城市篩選</h3>
+                    <select id="cityFilter" class="city-filter-select">
+                        <option value="all">全部縣市</option>
+                    </select>
                 </div>
 
                 <div id="poolList"></div>
@@ -556,18 +579,20 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     
+    <!-- Firebase 設定檔 (請先設定 firebase-config.js) -->
+    <script src="firebase-config.js"></script>
+    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // ==================== Firebase 設定 ====================
-        // ⚠️ 重要:請將以下設定替換為你自己的 Firebase 專案設定
-        const firebaseConfig = {
-            apiKey: "AIzaSyDrMs8VqIJKK9H0lwq24d5uMMPQfimHBIE",
-            authDomain: "taiwan-pool-map.firebaseapp.com",
-            projectId: "taiwan-pool-map",
-            storageBucket: "taiwan-pool-map.firebasestorage.app",
-            messagingSenderId: "169847146397",
-            appId: "1:169847146397:web:aa8ba97c194ecfe31ad174",
-            measurementId: "G-6ZFFQ0KWT9"
+        // 從外部檔案載入 Firebase 設定
+        const firebaseConfig = window.firebaseConfig || {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // 初始化 Firebase
@@ -908,8 +933,24 @@
             
             console.log(`📊 總共載入 ${pools.length} 個泳池`);
             
+            // 初始化城市選單
+            initCityFilter();
+            
             displayPools(pools);
             updateStats();
+        }
+
+        // 初始化城市篩選選單
+        function initCityFilter() {
+            const cityFilter = document.getElementById('cityFilter');
+            const cities = [...new Set(pools.map(pool => pool.city))].sort();
+            
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                cityFilter.appendChild(option);
+            });
         }
 
         // 顯示泳池標記
@@ -1021,26 +1062,46 @@
         });
 
         // 篩選功能
+        let currentTypeFilter = 'all';
+        let currentCityFilter = 'all';
+
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                // 只更新同類型的按鈕
+                document.querySelectorAll('.filter-btn[data-type="general"]').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
-                const filter = btn.dataset.filter;
-                currentFilter = filter;
-                
-                let filtered = pools;
-                if (filter !== 'all') {
-                    if (filter === 'indoor' || filter === 'outdoor') {
-                        filtered = pools.filter(pool => pool.type === filter);
-                    } else if (filter === '50m' || filter === '25m') {
-                        filtered = pools.filter(pool => pool.length === filter);
-                    }
-                }
-                
-                displayPools(filtered);
+                currentTypeFilter = btn.dataset.filter;
+                applyFilters();
             });
         });
+
+        // 城市篩選
+        document.getElementById('cityFilter').addEventListener('change', (e) => {
+            currentCityFilter = e.target.value;
+            applyFilters();
+        });
+
+        // 應用所有篩選條件
+        function applyFilters() {
+            let filtered = pools;
+
+            // 套用類型篩選
+            if (currentTypeFilter !== 'all') {
+                if (currentTypeFilter === 'indoor' || currentTypeFilter === 'outdoor') {
+                    filtered = filtered.filter(pool => pool.type === currentTypeFilter);
+                } else if (currentTypeFilter === '50m' || currentTypeFilter === '25m') {
+                    filtered = filtered.filter(pool => pool.length === currentTypeFilter);
+                }
+            }
+
+            // 套用城市篩選
+            if (currentCityFilter !== 'all') {
+                filtered = filtered.filter(pool => pool.city === currentCityFilter);
+            }
+
+            displayPools(filtered);
+        }
 
         // 新增泳池表單
         function showAddPoolForm() {
