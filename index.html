@@ -561,27 +561,15 @@
     <script>
         // ==================== Firebase 設定 ====================
         // ⚠️ 重要:請將以下設定替換為你自己的 Firebase 專案設定
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "firebase/app";
-        import { getAnalytics } from "firebase/analytics";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
-        apiKey: "AIzaSyDrMs8VqIJKK9H0lwq24d5uMMPQfimHBIE",
-        authDomain: "taiwan-pool-map.firebaseapp.com",
-        projectId: "taiwan-pool-map",
-        storageBucket: "taiwan-pool-map.firebasestorage.app",
-        messagingSenderId: "169847146397",
-        appId: "1:169847146397:web:aa8ba97c194ecfe31ad174",
-        measurementId: "G-6ZFFQ0KWT9"
+            apiKey: "AIzaSyDrMs8VqIJKK9H0lwq24d5uMMPQfimHBIE",
+            authDomain: "taiwan-pool-map.firebaseapp.com",
+            projectId: "taiwan-pool-map",
+            storageBucket: "taiwan-pool-map.firebasestorage.app",
+            messagingSenderId: "169847146397",
+            appId: "1:169847146397:web:aa8ba97c194ecfe31ad174",
+            measurementId: "G-6ZFFQ0KWT9"
         };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
 
         // 初始化 Firebase
         let db;
@@ -767,11 +755,13 @@
         // 從 Firebase 載入所有泳池
         async function loadPoolsFromFirebase() {
             if (!isFirebaseEnabled) {
+                console.log('📂 使用 localStorage 模式');
                 return loadPoolsFromLocalStorage();
             }
 
             try {
-                const snapshot = await db.collection('pools').orderBy('id').get();
+                console.log('🔄 正在從 Firebase 載入資料...');
+                const snapshot = await db.collection('pools').get();
                 const loadedPools = [];
                 
                 snapshot.forEach(doc => {
@@ -780,20 +770,44 @@
 
                 console.log(`✅ 從 Firebase 載入 ${loadedPools.length} 個泳池`);
                 
-                // 如果 Firebase 沒有資料,使用預設資料並上傳
+                // 如果 Firebase 沒有資料,使用預設資料並嘗試上傳
                 if (loadedPools.length === 0) {
-                    console.log('📤 上傳預設資料到 Firebase...');
-                    for (const pool of defaultPools) {
-                        await db.collection('pools').add(pool);
+                    console.log('📤 Firebase 資料庫是空的,正在上傳預設資料...');
+                    
+                    try {
+                        // 批次上傳預設資料
+                        const uploadPromises = defaultPools.map(pool => 
+                            db.collection('pools').add(pool)
+                        );
+                        await Promise.all(uploadPromises);
+                        
+                        console.log('✅ 預設資料上傳成功!');
+                        
+                        // 重新載入以取得 firebaseId
+                        return await loadPoolsFromFirebase();
+                    } catch (uploadError) {
+                        console.warn('⚠️ 上傳預設資料失敗:', uploadError);
+                        console.log('💡 改為顯示預設資料(僅本地)');
+                        
+                        // 上傳失敗就直接返回預設資料
+                        return defaultPools.map((pool, index) => ({
+                            ...pool,
+                            firebaseId: null // 標記為未同步
+                        }));
                     }
-                    return await loadPoolsFromFirebase(); // 重新載入
                 }
                 
                 return loadedPools;
             } catch (error) {
-                console.error('❌ Firebase 載入失敗:', error);
-                alert('載入資料失敗,請檢查網路連線');
-                return defaultPools;
+                console.error('❌ Firebase 連線失敗:', error);
+                console.log('💡 改用 localStorage 備援模式');
+                
+                // 如果 Firebase 完全無法連線,使用 localStorage
+                const localPools = loadPoolsFromLocalStorage();
+                if (localPools.length === 0) {
+                    return defaultPools;
+                }
+                return localPools;
             }
         }
 
@@ -852,11 +866,17 @@
             const savedPools = localStorage.getItem('taiwanPools');
             if (savedPools) {
                 try {
-                    return JSON.parse(savedPools);
+                    const parsed = JSON.parse(savedPools);
+                    console.log(`📂 從 localStorage 載入 ${parsed.length} 個泳池`);
+                    return parsed;
                 } catch (e) {
                     console.error('localStorage 載入錯誤:', e);
                 }
             }
+            
+            // 如果 localStorage 也沒有資料,使用預設資料並儲存
+            console.log('💾 首次使用,儲存預設資料到 localStorage');
+            localStorage.setItem('taiwanPools', JSON.stringify(defaultPools));
             return defaultPools;
         }
 
@@ -891,8 +911,17 @@
 
         // ==================== 初始化 ====================
         async function init() {
+            console.log('🚀 初始化台灣泳池地圖...');
+            
+            // 顯示載入訊息
+            const poolList = document.getElementById('poolList');
+            poolList.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">載入中...</div>';
+            
             // 載入資料
             pools = await loadPoolsFromFirebase();
+            
+            console.log(`📊 總共載入 ${pools.length} 個泳池`);
+            
             displayPools(pools);
             updateStats();
         }
