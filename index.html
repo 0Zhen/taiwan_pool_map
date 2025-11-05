@@ -598,19 +598,6 @@
             maxZoom: 18
         }).addTo(map);
 
-        let markers = [];
-        let currentFilter = 'all';
-        let selectedPoolId = null;
-
-        // ==================== 地圖初始化 ====================
-        const map = L.map('map').setView([23.5, 121], 8);
-
-        // 添加地圖圖層
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 18
-        }).addTo(map);
-
         // ==================== 資料管理 ====================
         let pools = [];
         let markers = [];
