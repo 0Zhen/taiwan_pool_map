@@ -13,21 +13,21 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://0zhen.github.io/taiwan_pool_map/">
+    <meta property="og:url" content="https://你的網站網址.com/">
     <meta property="og:title" content="台灣泳池地圖 - 找到最適合你的游泳池">
     <meta property="og:description" content="台灣最完整的游泳池地圖!搜尋全台各縣市的室內外泳池,包含票價、營業時間、設施介紹和評分。">
-    <meta property="og:image" content="https://0zhen.github.io/taiwan_pool_map/swimming_5200536.png">
+    <meta property="og:image" content="https://你的網站網址.com/swimming_5200536.png">
     <meta property="og:locale" content="zh_TW">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://0zhen.github.io/taiwan_pool_map/">
+    <meta name="twitter:url" content="https://你的網站網址.com/">
     <meta name="twitter:title" content="台灣泳池地圖 - 找到最適合你的游泳池">
     <meta name="twitter:description" content="台灣最完整的游泳池地圖!搜尋全台各縣市的室內外泳池,包含票價、營業時間、設施介紹和評分。">
-    <meta name="twitter:image" content="https://0zhen.github.io/taiwan_pool_map/swimming_5200536.png">
+    <meta name="twitter:image" content="https://你的網站網址.com/swimming_5200536.png">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://0zhen.github.io/taiwan_pool_map/">
+    <link rel="canonical" href="https://你的網站網址.com/">
     
     <!-- Favicon -->
     <link rel="shortcut icon" href="1-b93578db.ico" type="image/x-icon" />
@@ -39,7 +39,7 @@
       "@type": "WebApplication",
       "name": "台灣泳池地圖",
       "alternateName": "Taiwan Swimming Pool Map",
-      "url": "https://0zhen.github.io/taiwan_pool_map/",
+      "url": "https://你的網站網址.com/",
       "description": "台灣最完整的游泳池地圖,提供全台各縣市泳池資訊查詢",
       "applicationCategory": "UtilityApplication",
       "operatingSystem": "Any",
@@ -57,12 +57,12 @@
     </script>
     
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6ZFFQ0KWT9"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-6ZFFQ0KWT9');
+      gtag('config', 'G-XXXXXXXXXX');
     </script>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -685,13 +685,36 @@
         }
 
         // ==================== 地圖初始化 ====================
-        const map = L.map('map').setView([23.5, 121], 8);
+        let map;
+        
+        function initMap() {
+            try {
+                // 檢查地圖容器是否存在
+                const mapContainer = document.getElementById('map');
+                if (!mapContainer) {
+                    console.error('地圖容器未找到');
+                    return;
+                }
+                
+                // 初始化地圖
+                map = L.map('map', {
+                    center: [23.5, 121],
+                    zoom: 8,
+                    zoomControl: true,
+                    scrollWheelZoom: true
+                });
 
-        // 添加地圖圖層
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 18
-        }).addTo(map);
+                // 添加地圖圖層
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18
+                }).addTo(map);
+                
+                console.log('✅ 地圖初始化成功');
+            } catch (error) {
+                console.error('❌ 地圖初始化失敗:', error);
+            }
+        }
 
         // ==================== 資料管理 ====================
         let pools = [];
@@ -1002,6 +1025,9 @@
         async function init() {
             console.log('🚀 初始化台灣泳池地圖...');
             
+            // 先初始化地圖
+            initMap();
+            
             // 顯示載入訊息
             const poolList = document.getElementById('poolList');
             poolList.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">載入中...</div>';
@@ -1033,22 +1059,37 @@
 
         // 顯示泳池標記
         function displayPools(poolsToShow) {
+            if (!map) {
+                console.error('地圖尚未初始化');
+                return;
+            }
+            
             // 清除現有標記
-            markers.forEach(marker => map.removeLayer(marker));
+            markers.forEach(marker => {
+                try {
+                    map.removeLayer(marker);
+                } catch (e) {
+                    console.warn('移除標記失敗:', e);
+                }
+            });
             markers = [];
 
             // 添加新標記
             poolsToShow.forEach(pool => {
-                const marker = L.marker([pool.lat, pool.lng])
-                    .addTo(map)
-                    .bindPopup(createPopupContent(pool));
+                try {
+                    const marker = L.marker([pool.lat, pool.lng])
+                        .addTo(map)
+                        .bindPopup(createPopupContent(pool));
 
-                marker.on('click', () => {
-                    selectedPoolId = pool.id;
-                    displayPoolList(poolsToShow);
-                });
+                    marker.on('click', () => {
+                        selectedPoolId = pool.id;
+                        displayPoolList(poolsToShow);
+                    });
 
-                markers.push(marker);
+                    markers.push(marker);
+                } catch (error) {
+                    console.error('添加標記失敗:', pool.name, error);
+                }
             });
 
             displayPoolList(poolsToShow);
@@ -1088,8 +1129,16 @@
                 card.className = 'pool-card' + (pool.id === selectedPoolId ? ' selected' : '');
                 card.onclick = () => {
                     selectedPoolId = pool.id;
-                    map.setView([pool.lat, pool.lng], 15);
-                    markers.find(m => m.getLatLng().lat === pool.lat && m.getLatLng().lng === pool.lng)?.openPopup();
+                    if (map) {
+                        map.setView([pool.lat, pool.lng], 15);
+                        const marker = markers.find(m => 
+                            m.getLatLng().lat === pool.lat && 
+                            m.getLatLng().lng === pool.lng
+                        );
+                        if (marker) {
+                            marker.openPopup();
+                        }
+                    }
                     displayPoolList(poolsToShow);
                 };
 
