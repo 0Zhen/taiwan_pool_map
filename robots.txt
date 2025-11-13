@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://你的網站網址.com/sitemap.xml
+# Sitemap 位置
+Sitemap: https://0Zhen.github.io/taiwan_pool_map/sitemap.xml
+
+# 爬蟲延遲（可選）
+Crawl-delay: 1
